@@ -19,12 +19,14 @@ class UserResponse(BaseModel):
 class HabitCreate(BaseModel):
     name: str
     description: str | None = None
+    frequency: str = "daily"  # "daily", "weekly", or "monthly"
 
 
 class HabitResponse(BaseModel):
     hid: int
     name: str
     description: str | None = None
+    frequency: str
 
     class Config:
         from_attributes = True

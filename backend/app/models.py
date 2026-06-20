@@ -21,6 +21,7 @@ class Habit(Base):
     hid = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     description = Column(String(300), nullable=True)
+    frequency = Column(String(20), nullable=False, default="daily")  # daily, weekly, monthly
     # streak is calculated from HabitLog — not stored here
 
 
