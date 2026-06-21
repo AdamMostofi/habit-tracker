@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { motion, type Variants } from "motion/react"
+import { motion, useReducedMotion, type Variants } from "motion/react"
 import { habits } from "@/lib/api"
 import type { Habit } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -41,6 +41,7 @@ const badgeVariant: Record<string, "secondary" | "outline" | "ghost"> = {
 }
 
 export function HabitsList() {
+  const prefersReduced = useReducedMotion()
   const [habitsList, setHabitsList] = useState<Habit[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -133,6 +134,7 @@ export function HabitsList() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
+          transition={prefersReduced ? { staggerChildren: 0 } : undefined}
         >
           {frequencyOrder.map((freq, idx) => {
             const items = grouped[freq]
@@ -156,8 +158,10 @@ export function HabitsList() {
                   {items.map((habit) => (
                     <motion.div
                       key={habit.hid}
+                      layout
                       variants={itemVariants}
                       whileHover={{ scale: 1.015 }}
+                      transition={{ layout: { duration: 0.3 } }}
                       className="group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
                     >
                       <Link

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react"
-import { motion, AnimatePresence, type Variants } from "motion/react"
-import { CheckCircle2 } from "lucide-react"
+import { motion, AnimatePresence, LayoutGroup, useReducedMotion, type Variants } from "motion/react"
+import { CheckCircle2, ListChecks } from "lucide-react"
 import { habits } from "@/lib/api"
 import type { Habit } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -58,6 +58,7 @@ const monthLabel = new Date().toLocaleDateString("en-US", {
 })
 
 export function TodayView() {
+  const prefersReduced = useReducedMotion()
   const [habitsList, setHabitsList] = useState<Habit[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -123,8 +124,10 @@ export function TodayView() {
         return (
           <motion.div
             key={habit.hid}
+            layout
             variants={itemVariants}
             whileHover={{ scale: 1.015 }}
+            transition={{ layout: { duration: 0.3 } }}
             className="group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
           >
             <Link
@@ -229,6 +232,7 @@ export function TodayView() {
       {/* No habits at all */}
       {isEmpty && (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card/50 p-12 text-center">
+          <ListChecks className="size-8 text-muted-foreground/30" />
           <p className="text-sm text-muted-foreground">No habits yet</p>
           <Link
             to="/habits/new"
@@ -266,6 +270,7 @@ export function TodayView() {
           variants={sectionVariants}
           initial="hidden"
           animate="visible"
+          transition={prefersReduced ? { staggerChildren: 0 } : undefined}
         >
           {frequencyOrder.map((freq) => {
             const items = grouped[freq]
@@ -280,7 +285,7 @@ export function TodayView() {
                     {subtitle[freq]}
                   </span>
                 </div>
-                {renderCards(items)}
+                <LayoutGroup>{renderCards(items)}</LayoutGroup>
               </motion.section>
             )
           })}
