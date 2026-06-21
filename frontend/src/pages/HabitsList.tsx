@@ -160,7 +160,10 @@ export function HabitsList() {
                       whileHover={{ scale: 1.015 }}
                       className="group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
                     >
-                      <div className="min-w-0 flex-1 space-y-1.5">
+                      <Link
+                        to={`/habits/${habit.hid}`}
+                        className="min-w-0 flex-1 space-y-1.5"
+                      >
                         <div className="flex items-center gap-2">
                           <p className="truncate font-medium text-foreground">
                             {habit.name}
@@ -177,8 +180,8 @@ export function HabitsList() {
                             {habit.description}
                           </p>
                         )}
-                        <StreakBadge habitId={habit.hid} count={0} />
-                      </div>
+                        <StreakBadge habitId={habit.hid} count={habit.current_streak} />
+                      </Link>
                       <div className="flex items-center gap-1">
                         <DeleteHabitButton
                           habitId={habit.hid}

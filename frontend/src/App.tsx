@@ -2,8 +2,10 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "motion/react"
 import { Sidebar } from "@/components/Sidebar"
 import { TodayView } from "@/pages/TodayView"
-import { HabitsList } from "@/pages/HabitsList"
 import { CreateHabit } from "@/pages/CreateHabit"
+import { HabitDetail } from "@/pages/HabitDetail"
+import { EditHabit } from "@/pages/EditHabit"
+import { Analytics } from "@/pages/Analytics"
 import { Toaster } from "@/components/ui/sonner"
 
 function AppContent() {
@@ -21,8 +23,10 @@ function AppContent() {
           >
             <Routes location={location}>
               <Route path="/" element={<TodayView />} />
-              <Route path="/habits" element={<HabitsList />} />
               <Route path="/habits/new" element={<CreateHabit />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/habits/:id" element={<HabitDetail />} />
+              <Route path="/habits/:id/edit" element={<EditHabit />} />
             </Routes>
           </motion.div>
         </AnimatePresence>

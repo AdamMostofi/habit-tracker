@@ -2,12 +2,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { NavLink } from "react-router-dom"
 import { motion } from "motion/react"
-import { Menu, Home, List, Plus } from "lucide-react"
+import { Menu, Home, Plus, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { to: "/", label: "Today", icon: Home, end: true },
-  { to: "/habits", label: "All Habits", icon: List, end: true },
+  { to: "/", label: "Habits", icon: Home, end: true },
+  { to: "/analytics", label: "Analytics", icon: BarChart3, end: true },
   { to: "/habits/new", label: "New Habit", icon: Plus, end: false },
 ]
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { motion, AnimatePresence, type Variants } from "motion/react"
 import { CheckCircle2 } from "lucide-react"
 import { habits } from "@/lib/api"
@@ -10,12 +10,18 @@ import { DeleteHabitButton } from "@/components/DeleteHabitButton"
 import { StreakBadge } from "@/components/StreakBadge"
 import { Link } from "react-router-dom"
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.04 },
-  },
+const frequencyOrder = ["daily", "weekly", "monthly"] as const
+
+const frequencyLabel: Record<string, string> = {
+  daily: "Daily",
+  weekly: "Weekly",
+  monthly: "Monthly",
+}
+
+const frequencyBadge: Record<string, "secondary" | "outline" | "ghost"> = {
+  daily: "secondary",
+  weekly: "outline",
+  monthly: "ghost",
 }
 
 const itemVariants: Variants = {
@@ -33,6 +39,24 @@ const todayFormatted = new Date().toLocaleDateString("en-US", {
   day: "numeric",
 })
 
+/* Weekly date range label */
+const weekLabel = (() => {
+  const now = new Date()
+  const day = now.getDay()
+  const diffToMon = day === 0 ? -6 : 1 - day
+  const monday = new Date(now)
+  monday.setDate(now.getDate() + diffToMon)
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 6)
+  const fmt = (d: Date) =>
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+  return `${fmt(monday)} – ${fmt(sunday)}`
+})()
+
+const monthLabel = new Date().toLocaleDateString("en-US", {
+  month: "long",
+})
+
 export function TodayView() {
   const [habitsList, setHabitsList] = useState<Habit[]>([])
   const [loading, setLoading] = useState(true)
@@ -42,8 +66,12 @@ export function TodayView() {
   const fetchHabits = async () => {
     setError(null)
     try {
-      const data = await habits.today()
-      setHabitsList(data)
+      const [daily, weekly, monthly] = await Promise.all([
+        habits.today(),
+        habits.weekly(),
+        habits.monthly(),
+      ])
+      setHabitsList([...daily, ...weekly, ...monthly])
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load habits")
     }
@@ -56,32 +84,128 @@ export function TodayView() {
 
   const handleCheckIn =
     (habitId: number) => async (_status: "done" | "skip") => {
-      /* CheckInButton already called habits.checkIn — we just update local state */
       setCheckedIn((prev) => new Set(prev).add(habitId))
       await fetchHabits()
     }
 
+  const grouped = useMemo(() => {
+    const groups: Record<string, Habit[]> = {
+      daily: [],
+      weekly: [],
+      monthly: [],
+    }
+    habitsList.forEach((habit) => {
+      if (groups[habit.frequency]) {
+        groups[habit.frequency].push(habit)
+      }
+    })
+    return groups
+  }, [habitsList])
+
   const isError = !loading && error !== null
   const isEmpty = !loading && !error && habitsList.length === 0
   const allDone =
-    !loading && !error && habitsList.length > 0 && checkedIn.size >= habitsList.length
+    !loading &&
+    !error &&
+    habitsList.length > 0 &&
+    habitsList.every((h) => checkedIn.has(h.hid))
+
+  const subtitle: Record<string, string> = {
+    daily: "Due today",
+    weekly: weekLabel,
+    monthly: monthLabel,
+  }
+
+  const renderCards = (items: Habit[]) => (
+    <div className="grid grid-cols-1 gap-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
+      {items.map((habit) => {
+        const isCheckedIn = checkedIn.has(habit.hid)
+        return (
+          <motion.div
+            key={habit.hid}
+            variants={itemVariants}
+            whileHover={{ scale: 1.015 }}
+            className="group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
+          >
+            <Link
+              to={`/habits/${habit.hid}`}
+              className="min-w-0 flex-1 space-y-1.5"
+            >
+              <div className="flex items-center gap-2">
+                <p className="truncate font-medium text-foreground">
+                  {habit.name}
+                </p>
+                <Badge
+                  variant={frequencyBadge[habit.frequency] ?? "secondary"}
+                  className="shrink-0"
+                >
+                  {habit.frequency}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <StreakBadge
+                  habitId={habit.hid}
+                  count={habit.current_streak}
+                />
+                {isCheckedIn && (
+                  <span className="font-mono text-xs text-primary">
+                    checked
+                  </span>
+                )}
+              </div>
+            </Link>
+            <div className="flex items-center gap-1">
+              <DeleteHabitButton
+                habitId={habit.hid}
+                habitName={habit.name}
+                onDeleted={() => {
+                  setHabitsList((prev) =>
+                    prev.filter((h) => h.hid !== habit.hid),
+                  )
+                }}
+              />
+              <CheckInButton
+                habitId={habit.hid}
+                currentStatus={null}
+                onCheckIn={handleCheckIn(habit.hid)}
+              />
+            </div>
+          </motion.div>
+        )
+      })}
+    </div>
+  )
+
+  const sectionVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.03 },
+    },
+  }
 
   return (
     <section>
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-semibold tracking-tight">Today</h1>
-        <p className="mt-1 font-mono text-sm text-muted-foreground">{todayFormatted}</p>
+        <p className="mt-1 font-mono text-sm text-muted-foreground">
+          {todayFormatted}
+        </p>
       </div>
 
       {/* Loading skeleton */}
       {loading && (
-        <div className="space-y-3">
-          {[0, 1, 2].map((i) => (
-            <Skeleton
-              key={i}
-              className={`h-20 rounded-xl ${i === 0 ? "w-full" : i === 1 ? "w-5/6" : "w-4/5"}`}
-            />
+        <div className="space-y-8">
+          {[0, 1, 2].map((section) => (
+            <div key={section}>
+              <Skeleton className="mb-3 h-4 w-16 rounded-md" />
+              <div className="space-y-3">
+                {[0, 1].map((card) => (
+                  <Skeleton key={card} className="h-20 w-full rounded-xl" />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -115,7 +239,6 @@ export function TodayView() {
         </div>
       )}
 
-      {/* Celebration banner — slides in when all checked in */}
       <AnimatePresence>
         {allDone && (
           <motion.div
@@ -127,58 +250,38 @@ export function TodayView() {
             className="mb-4 flex items-center gap-2.5 overflow-hidden rounded-lg border border-primary/20 bg-primary/5 px-4 py-3"
           >
             <CheckCircle2 className="size-4 shrink-0 text-primary" />
-            <p className="text-sm font-medium text-primary">All done for today</p>
-            <p className="text-sm text-muted-foreground">Great work staying consistent</p>
+            <p className="text-sm font-medium text-primary">
+              All done for today
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Great work staying consistent
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Habit cards — always visible */}
       {!loading && !isError && habitsList.length > 0 && (
         <motion.div
-          className="grid grid-cols-1 gap-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]"
-          variants={containerVariants}
+          className="space-y-8"
+          variants={sectionVariants}
           initial="hidden"
           animate="visible"
         >
-          {habitsList.map((habit) => {
-            const isCheckedIn = checkedIn.has(habit.hid)
+          {frequencyOrder.map((freq) => {
+            const items = grouped[freq]
+            if (!items?.length) return null
             return (
-              <motion.div
-                key={habit.hid}
-                variants={itemVariants}
-                whileHover={{ scale: 1.015 }}
-                className="group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
-              >
-                <div className="min-w-0 flex-1 space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate font-medium text-foreground">{habit.name}</p>
-                    <Badge variant="secondary" className="shrink-0">
-                      {habit.frequency}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <StreakBadge habitId={habit.hid} count={0} />
-                    {isCheckedIn && (
-                      <span className="font-mono text-xs text-primary">checked</span>
-                    )}
-                  </div>
+              <motion.section key={freq} variants={itemVariants}>
+                <div className="flex items-baseline gap-3 mb-3">
+                  <h2 className="font-mono text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                    {frequencyLabel[freq]}
+                  </h2>
+                  <span className="font-mono text-[10px] text-muted-foreground/40 tracking-wide">
+                    {subtitle[freq]}
+                  </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <DeleteHabitButton
-                    habitId={habit.hid}
-                    habitName={habit.name}
-                    onDeleted={() => {
-                      setHabitsList((prev) => prev.filter((h) => h.hid !== habit.hid))
-                    }}
-                  />
-                  <CheckInButton
-                    habitId={habit.hid}
-                    currentStatus={null}
-                    onCheckIn={handleCheckIn(habit.hid)}
-                  />
-                </div>
-              </motion.div>
+                {renderCards(items)}
+              </motion.section>
             )
           })}
         </motion.div>
