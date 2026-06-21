@@ -5,6 +5,7 @@ import type { Habit } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { CheckInButton } from "@/components/CheckInButton"
+import { DeleteHabitButton } from "@/components/DeleteHabitButton"
 import { StreakBadge } from "@/components/StreakBadge"
 import { Link } from "react-router-dom"
 
@@ -157,7 +158,7 @@ export function HabitsList() {
                       key={habit.hid}
                       variants={itemVariants}
                       whileHover={{ scale: 1.015 }}
-                      className="flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
+                      className="group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
                     >
                       <div className="min-w-0 flex-1 space-y-1.5">
                         <div className="flex items-center gap-2">
@@ -178,24 +179,33 @@ export function HabitsList() {
                         )}
                         <StreakBadge habitId={habit.hid} count={0} />
                       </div>
-                      <CheckInButton
-                        habitId={habit.hid}
-                        currentStatus={null}
-                        onCheckIn={async (status: "done" | "skip") => {
-                          const today = new Date().toISOString().split("T")[0]
-                          try {
-                            await habits.checkIn(habit.hid, {
-                              hid: habit.hid,
-                              user_id: 1,
-                              date: today,
-                              status,
-                            })
-                            await fetchHabits()
-                          } catch {
-                            /* silently fail */
-                          }
-                        }}
-                      />
+                      <div className="flex items-center gap-1">
+                        <DeleteHabitButton
+                          habitId={habit.hid}
+                          habitName={habit.name}
+                          onDeleted={() => {
+                            setHabitsList((prev) => prev.filter((h) => h.hid !== habit.hid))
+                          }}
+                        />
+                        <CheckInButton
+                          habitId={habit.hid}
+                          currentStatus={null}
+                          onCheckIn={async (status: "done" | "skip") => {
+                            const today = new Date().toISOString().split("T")[0]
+                            try {
+                              await habits.checkIn(habit.hid, {
+                                hid: habit.hid,
+                                user_id: 1,
+                                date: today,
+                                status,
+                              })
+                              await fetchHabits()
+                            } catch {
+                              /* silently fail */
+                            }
+                          }}
+                        />
+                      </div>
                     </motion.div>
                   ))}
                 </div>

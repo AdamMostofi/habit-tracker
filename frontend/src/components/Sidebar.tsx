@@ -6,9 +6,9 @@ import { Menu, Home, List, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
-  { to: "/", label: "Today", icon: Home },
-  { to: "/habits", label: "All Habits", icon: List },
-  { to: "/habits/new", label: "New Habit", icon: Plus },
+  { to: "/", label: "Today", icon: Home, end: true },
+  { to: "/habits", label: "All Habits", icon: List, end: true },
+  { to: "/habits/new", label: "New Habit", icon: Plus, end: false },
 ]
 
 export function Sidebar() {
@@ -59,7 +59,7 @@ function MobileNavContent() {
           >
             <NavLink
               to={item.to}
-              end={item.to === "/"}
+              end={item.end}
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-3 px-3 py-2.5 text-sm font-mono transition-all duration-150 border-l-2",
@@ -99,7 +99,7 @@ function DesktopNavContent() {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === "/"}
+            end={item.end}
             className={({ isActive }) =>
               cn(
                 "flex items-center gap-3 px-3 py-2.5 text-sm font-mono transition-all duration-150 border-l-2",
