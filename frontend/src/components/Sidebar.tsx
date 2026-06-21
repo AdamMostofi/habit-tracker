@@ -47,7 +47,6 @@ function MobileNavContent() {
       className="flex flex-col h-full p-4 pt-14"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
     >
       <nav className="flex-1 space-y-1">
         {navItems.map((item, index) => (
@@ -62,7 +61,7 @@ function MobileNavContent() {
               end={item.end}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 px-3 py-2.5 text-sm font-mono transition-all duration-150 border-l-2",
+                  "flex items-center gap-3 px-3 py-2.5 text-sm font-mono transition-all duration-150 border-l-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
                   isActive
                     ? "border-primary text-primary"
                     : "border-transparent text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-primary/30",
@@ -102,7 +101,7 @@ function DesktopNavContent() {
             end={item.end}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 text-sm font-mono transition-all duration-150 border-l-2",
+                "flex items-center gap-3 px-3 py-2.5 text-sm font-mono transition-all duration-150 border-l-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar",
                 isActive
                   ? "border-primary text-primary"
                   : "border-transparent text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-primary/30",
