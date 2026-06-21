@@ -47,12 +47,19 @@ def compute_streak(db: Session, habit_id: int) -> int:
 
 
 def enrich_habit(db: Session, habit: Habit) -> HabitResponse:
+    last_log = (
+        db.query(HabitLog.date)
+        .filter(HabitLog.hid == habit.hid, HabitLog.status == "done")
+        .order_by(HabitLog.date.desc())
+        .first()
+    )
     return HabitResponse(
         hid=habit.hid,
         name=habit.name,
         description=habit.description,
         frequency=habit.frequency,
         current_streak=compute_streak(db, habit.hid),
+        last_check_in=last_log[0] if last_log else None,
     )
 
 
@@ -177,6 +184,12 @@ def dashboard_stats(db: Session = Depends(get_db)):
         cr30 = completion_rate(db, h.hid, 30)
         if cs > best_overall:
             best_overall = cs
+        last_log = (
+            db.query(HabitLog.date)
+            .filter(HabitLog.hid == h.hid, HabitLog.status == "done")
+            .order_by(HabitLog.date.desc())
+            .first()
+        )
         habit_stats.append(
             HabitStatsItem(
                 hid=h.hid,
@@ -187,6 +200,7 @@ def dashboard_stats(db: Session = Depends(get_db)):
                 total_checkins=tc,
                 completion_rate_7=cr7,
                 completion_rate_30=cr30,
+                last_check_in=last_log[0] if last_log else None,
             )
         )
 

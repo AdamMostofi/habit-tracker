@@ -127,6 +127,7 @@ export function CheckInButton({
           className="h-4 w-4 animate-spin"
           viewBox="0 0 24 24"
           fill="none"
+          aria-hidden="true"
         >
           <circle
             className="opacity-25"
@@ -143,11 +144,11 @@ export function CheckInButton({
           />
         </svg>
       ) : isDone ? (
-        <CheckCircle2 className="size-4" />
+        <CheckCircle2 className="size-4" aria-hidden="true" />
       ) : isSkip ? (
-        <Minus className="size-4 stroke-[2.5]" />
+        <Minus className="size-4 stroke-[2.5]" aria-hidden="true" />
       ) : (
-        <Circle className="size-4" />
+        <Circle className="size-4" aria-hidden="true" />
       )}
     </motion.button>
   );

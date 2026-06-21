@@ -6,6 +6,7 @@ export interface Habit {
   description: string | null
   frequency: "daily" | "weekly" | "monthly"
   current_streak: number
+  last_check_in: string | null
 }
 
 export interface HabitCreate {
@@ -47,6 +48,7 @@ export interface HabitStatsItem {
   total_checkins: number
   completion_rate_7: number
   completion_rate_30: number
+  last_check_in: string | null
 }
 
 export interface WeekSummary {

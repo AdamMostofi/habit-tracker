@@ -218,7 +218,7 @@ export function HabitDetail() {
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="size-4" />
-        Habits
+        Back to habits
       </Link>
 
       {/* Habit card */}
@@ -308,6 +308,8 @@ export function HabitDetail() {
                   <div
                     key={cell.dateStr}
                     title={`${cell.dateStr}${status ? " — " + status : ""}`}
+                    aria-label={`${cell.dateStr}${status ? " — " + status : ""}`}
+                    role="img"
                     className={`w-[26px] h-[26px] rounded-[5px] ${bg} ${
                       cell.isToday ? "ring-1 ring-primary" : ""
                     } transition-colors duration-150`}

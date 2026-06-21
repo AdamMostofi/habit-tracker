@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { motion } from "motion/react"
 import { habits } from "@/lib/api"
 import type { DashboardStats } from "@/lib/types"
+import { relativeDate } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StreakBadge } from "@/components/StreakBadge"
 import {
@@ -247,6 +248,9 @@ export function Analytics() {
                       <StreakBadge habitId={h.hid} count={h.current_streak} />
                       <span className="text-[11px] font-mono text-muted-foreground/50 tabular-nums">
                         Best: {h.best_streak}
+                      </span>
+                      <span className="text-[11px] font-mono text-muted-foreground/30 tabular-nums">
+                        last {relativeDate(h.last_check_in)}
                       </span>
                     </div>
                   </div>

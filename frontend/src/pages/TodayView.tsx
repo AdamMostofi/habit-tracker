@@ -3,6 +3,7 @@ import { motion, AnimatePresence, LayoutGroup, type Variants } from "motion/reac
 import { CheckCircle2, ListChecks } from "lucide-react"
 import { habits } from "@/lib/api"
 import type { Habit } from "@/lib/types"
+import { relativeDate } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { CheckInButton } from "@/components/CheckInButton"
@@ -158,6 +159,9 @@ export function TodayView() {
                   habitId={habit.hid}
                   count={habit.current_streak}
                 />
+                <span className="font-mono text-[10px] text-muted-foreground/40 tabular-nums">
+                  {relativeDate(habit.last_check_in)}
+                </span>
                 {isCheckedIn && (
                   <span className="font-mono text-xs text-primary">
                     checked

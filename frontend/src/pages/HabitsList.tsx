@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react"
 import { motion, type Variants } from "motion/react"
 import { habits } from "@/lib/api"
 import type { Habit } from "@/lib/types"
+import { relativeDate } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { CheckInButton } from "@/components/CheckInButton"
@@ -186,7 +187,12 @@ export function HabitsList() {
                             {habit.description}
                           </p>
                         )}
-                        <StreakBadge habitId={habit.hid} count={habit.current_streak} />
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <StreakBadge habitId={habit.hid} count={habit.current_streak} />
+                          <span className="font-mono text-[10px] text-muted-foreground/40 tabular-nums">
+                            {relativeDate(habit.last_check_in)}
+                          </span>
+                        </div>
                       </Link>
                       <div className="flex items-center gap-1">
                         <DeleteHabitButton

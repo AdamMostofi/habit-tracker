@@ -28,6 +28,7 @@ class HabitResponse(BaseModel):
     description: str | None = None
     frequency: str
     current_streak: int = 0
+    last_check_in: date | None = None
 
     class Config:
         from_attributes = True
@@ -60,6 +61,7 @@ class HabitStatsItem(BaseModel):
     total_checkins: int
     completion_rate_7: float
     completion_rate_30: float
+    last_check_in: date | None = None
 
 
 class WeekSummary(BaseModel):
