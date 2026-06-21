@@ -27,6 +27,7 @@ class HabitResponse(BaseModel):
     name: str
     description: str | None = None
     frequency: str
+    current_streak: int = 0
 
     class Config:
         from_attributes = True
@@ -48,3 +49,27 @@ class HabitLogResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class HabitStatsItem(BaseModel):
+    hid: int
+    name: str
+    frequency: str
+    current_streak: int
+    best_streak: int
+    total_checkins: int
+    completion_rate_7: float
+    completion_rate_30: float
+
+
+class WeekSummary(BaseModel):
+    label: str
+    done: int
+
+
+class DashboardStats(BaseModel):
+    total_habits: int
+    total_checkins: int
+    best_streak: int
+    habits: list[HabitStatsItem]
+    weekly_summary: list[WeekSummary]
