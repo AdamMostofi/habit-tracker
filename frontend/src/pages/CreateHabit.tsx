@@ -37,6 +37,10 @@ export function CreateHabit() {
       setError("Name is required")
       return
     }
+    if (name.trim().length < 2) {
+      setError("Name must be at least 2 characters")
+      return
+    }
 
     setLoading(true)
 
@@ -123,7 +127,7 @@ export function CreateHabit() {
           </Select>
         </div>
 
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} whileFocus={{ scale: 1.02 }}>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading && <Loader2 className="size-4 animate-spin" />}
             {loading ? "Creating..." : "Create Habit"}

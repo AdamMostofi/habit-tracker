@@ -57,6 +57,10 @@ export function EditHabit() {
       setError("Name is required")
       return
     }
+    if (name.trim().length < 2) {
+      setError("Name must be at least 2 characters")
+      return
+    }
 
     setSaving(true)
 
@@ -176,7 +180,7 @@ export function EditHabit() {
           </Select>
         </div>
 
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} whileFocus={{ scale: 1.02 }}>
           <Button type="submit" className="w-full" disabled={saving}>
             {saving && <Loader2 className="size-4 animate-spin" />}
             {saving ? "Saving..." : "Save Changes"}
