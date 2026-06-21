@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { motion, AnimatePresence, LayoutGroup, useReducedMotion, type Variants } from "motion/react"
+import { motion, AnimatePresence, LayoutGroup, type Variants } from "motion/react"
 import { CheckCircle2, ListChecks } from "lucide-react"
 import { habits } from "@/lib/api"
 import type { Habit } from "@/lib/types"
@@ -58,11 +58,17 @@ const monthLabel = new Date().toLocaleDateString("en-US", {
 })
 
 export function TodayView() {
-  const prefersReduced = useReducedMotion()
   const [habitsList, setHabitsList] = useState<Habit[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [checkedIn, setCheckedIn] = useState<Set<number>>(new Set())
+  const [glowingCards, setGlowingCards] = useState<Set<number>>(new Set())
+
+  useEffect(() => {
+    if (glowingCards.size === 0) return
+    const timer = setTimeout(() => setGlowingCards(new Set()), 1500)
+    return () => clearTimeout(timer)
+  }, [glowingCards])
 
   const fetchHabits = async () => {
     setError(null)
@@ -128,7 +134,9 @@ export function TodayView() {
             variants={itemVariants}
             whileHover={{ scale: 1.015 }}
             transition={{ layout: { duration: 0.3 } }}
-            className="group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
+            className={`group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80 ${
+              glowingCards.has(habit.hid) ? "ring-1 ring-primary/50" : ""
+            }`}
           >
             <Link
               to={`/habits/${habit.hid}`}
@@ -171,6 +179,9 @@ export function TodayView() {
                 habitId={habit.hid}
                 currentStatus={null}
                 onCheckIn={handleCheckIn(habit.hid)}
+                onAnimationComplete={() => {
+                  setGlowingCards((prev) => new Set(prev).add(habit.hid))
+                }}
               />
             </div>
           </motion.div>
@@ -265,18 +276,18 @@ export function TodayView() {
       </AnimatePresence>
 
       {!loading && !isError && habitsList.length > 0 && (
-        <motion.div
-          className="space-y-8"
-          variants={sectionVariants}
-          initial="hidden"
-          animate="visible"
-          transition={prefersReduced ? { staggerChildren: 0 } : undefined}
-        >
+        <div className="space-y-8">
           {frequencyOrder.map((freq) => {
             const items = grouped[freq]
             if (!items?.length) return null
             return (
-              <motion.section key={freq} variants={itemVariants}>
+              <motion.section
+                key={freq}
+                variants={sectionVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-60px" }}
+              >
                 <div className="flex items-baseline gap-3 mb-3">
                   <h2 className="font-mono text-xs font-medium tracking-widest text-muted-foreground uppercase">
                     {frequencyLabel[freq]}
@@ -289,7 +300,7 @@ export function TodayView() {
               </motion.section>
             )
           })}
-        </motion.div>
+        </div>
       )}
     </section>
   )

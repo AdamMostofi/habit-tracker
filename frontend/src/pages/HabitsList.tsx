@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { motion, useReducedMotion, type Variants } from "motion/react"
+import { motion, type Variants } from "motion/react"
 import { habits } from "@/lib/api"
 import type { Habit } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -41,10 +41,16 @@ const badgeVariant: Record<string, "secondary" | "outline" | "ghost"> = {
 }
 
 export function HabitsList() {
-  const prefersReduced = useReducedMotion()
   const [habitsList, setHabitsList] = useState<Habit[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [glowingCards, setGlowingCards] = useState<Set<number>>(new Set())
+
+  useEffect(() => {
+    if (glowingCards.size === 0) return
+    const timer = setTimeout(() => setGlowingCards(new Set()), 1500)
+    return () => clearTimeout(timer)
+  }, [glowingCards])
 
   const fetchHabits = async () => {
     setError(null)
@@ -129,13 +135,7 @@ export function HabitsList() {
 
       {/* Grouped habits */}
       {!loading && !isError && !isEmpty && (
-        <motion.div
-          className="space-y-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          transition={prefersReduced ? { staggerChildren: 0 } : undefined}
-        >
+        <div className="space-y-8">
           {frequencyOrder.map((freq, idx) => {
             const items = grouped[freq]
             if (!items?.length) return null
@@ -144,7 +144,7 @@ export function HabitsList() {
             const useGrid = idx % 2 === 0
 
             return (
-              <motion.div key={freq} variants={itemVariants}>
+              <motion.div key={freq} variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
                 <h2 className="mb-3 font-mono text-xs font-medium tracking-widest text-muted-foreground uppercase">
                   {frequencyLabel[freq]}
                 </h2>
@@ -162,7 +162,9 @@ export function HabitsList() {
                       variants={itemVariants}
                       whileHover={{ scale: 1.015 }}
                       transition={{ layout: { duration: 0.3 } }}
-                      className="group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
+                      className={`group flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80 ${
+                        glowingCards.has(habit.hid) ? "ring-1 ring-primary/50" : ""
+                      }`}
                     >
                       <Link
                         to={`/habits/${habit.hid}`}
@@ -201,6 +203,9 @@ export function HabitsList() {
                             /* CheckInButton already called habits.checkIn */
                             await fetchHabits()
                           }}
+                          onAnimationComplete={() => {
+                            setGlowingCards((prev) => new Set(prev).add(habit.hid))
+                          }}
                         />
                       </div>
                     </motion.div>
@@ -209,7 +214,7 @@ export function HabitsList() {
               </motion.div>
             )
           })}
-        </motion.div>
+        </div>
       )}
     </section>
   )

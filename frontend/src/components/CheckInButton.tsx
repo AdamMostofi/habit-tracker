@@ -13,6 +13,7 @@ interface CheckInButtonProps {
   habitId: number;
   currentStatus?: CheckInStatus | null;
   onCheckIn: (status: CheckInStatus) => void;
+  onAnimationComplete?: () => void;
 }
 
 type AnimationState = "idle" | "pulse" | "shake";
@@ -28,6 +29,7 @@ export function CheckInButton({
   habitId,
   currentStatus,
   onCheckIn,
+  onAnimationComplete,
 }: CheckInButtonProps) {
   const [loading, setLoading] = useState(false);
   const [animation, setAnimation] = useState<AnimationState>("idle");
@@ -102,6 +104,11 @@ export function CheckInButton({
       }}
       whileTap={{ scale: 0.92 }}
       whileFocus={{ scale: 1.05 }}
+      onAnimationComplete={() => {
+        if (animation === "pulse") {
+          onAnimationComplete?.()
+        }
+      }}
       className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors duration-150 ${stateClass} ${
         loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
       } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`}
