@@ -190,19 +190,9 @@ export function HabitsList() {
                         <CheckInButton
                           habitId={habit.hid}
                           currentStatus={null}
-                          onCheckIn={async (status: "done" | "skip") => {
-                            const today = new Date().toISOString().split("T")[0]
-                            try {
-                              await habits.checkIn(habit.hid, {
-                                hid: habit.hid,
-                                user_id: 1,
-                                date: today,
-                                status,
-                              })
-                              await fetchHabits()
-                            } catch {
-                              /* silently fail */
-                            }
+                          onCheckIn={async () => {
+                            /* CheckInButton already called habits.checkIn */
+                            await fetchHabits()
                           }}
                         />
                       </div>

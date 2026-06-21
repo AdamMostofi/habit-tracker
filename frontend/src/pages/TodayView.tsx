@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
-import { motion, type Variants } from "motion/react"
+import { motion, AnimatePresence, type Variants } from "motion/react"
+import { CheckCircle2 } from "lucide-react"
 import { habits } from "@/lib/api"
 import type { Habit } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -54,20 +55,10 @@ export function TodayView() {
   }, [])
 
   const handleCheckIn =
-    (habitId: number) => async (status: "done" | "skip") => {
-      const today = new Date().toISOString().split("T")[0]
-      try {
-        await habits.checkIn(habitId, {
-          hid: habitId,
-          user_id: 1,
-          date: today,
-          status,
-        })
-        setCheckedIn((prev) => new Set(prev).add(habitId))
-        await fetchHabits()
-      } catch {
-        /* silently fail — toast can be added later */
-      }
+    (habitId: number) => async (_status: "done" | "skip") => {
+      /* CheckInButton already called habits.checkIn — we just update local state */
+      setCheckedIn((prev) => new Set(prev).add(habitId))
+      await fetchHabits()
     }
 
   const isError = !loading && error !== null
@@ -124,16 +115,26 @@ export function TodayView() {
         </div>
       )}
 
-      {/* All habits checked in */}
-      {allDone && (
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-card/50 p-12 text-center">
-          <p className="text-lg font-medium">All done for today ✦</p>
-          <p className="text-sm text-muted-foreground">Great work staying consistent</p>
-        </div>
-      )}
+      {/* Celebration banner — slides in when all checked in */}
+      <AnimatePresence>
+        {allDone && (
+          <motion.div
+            key="celebration-banner"
+            initial={{ opacity: 0, y: -8, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -8, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="mb-4 flex items-center gap-2.5 overflow-hidden rounded-lg border border-primary/20 bg-primary/5 px-4 py-3"
+          >
+            <CheckCircle2 className="size-4 shrink-0 text-primary" />
+            <p className="text-sm font-medium text-primary">All done for today</p>
+            <p className="text-sm text-muted-foreground">Great work staying consistent</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Habit cards */}
-      {!loading && !isError && habitsList.length > 0 && !allDone && (
+      {/* Habit cards — always visible */}
+      {!loading && !isError && habitsList.length > 0 && (
         <motion.div
           className="grid grid-cols-1 gap-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))]"
           variants={containerVariants}
