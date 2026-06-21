@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useRef } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Link } from "react-router-dom"
-import { motion, useInView, useAnimate } from "motion/react"
+import { motion } from "motion/react"
 import { habits } from "@/lib/api"
 import type { DashboardStats } from "@/lib/types"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -52,24 +52,6 @@ export function Analytics() {
     () => Math.max(...(stats?.weekly_summary.map((w) => w.done) ?? [1]), 1),
     [stats],
   )
-
-  const [chartScope, chartAnimate] = useAnimate()
-  const chartInView = useInView(chartScope, { once: true, margin: "-80px" })
-
-  const [habitScope, habitAnimate] = useAnimate()
-  const habitInView = useInView(habitScope, { once: true, margin: "-80px" })
-
-  useEffect(() => {
-    if (chartInView) {
-      chartAnimate(chartScope.current, { opacity: 1, y: 0 }, { duration: 0.4, ease: "easeOut" })
-    }
-  }, [chartInView, chartAnimate, chartScope])
-
-  useEffect(() => {
-    if (habitInView) {
-      habitAnimate(habitScope.current, { opacity: 1, y: 0 }, { duration: 0.4, ease: "easeOut" })
-    }
-  }, [habitInView, habitAnimate, habitScope])
 
   if (loading) {
     return (
@@ -185,8 +167,9 @@ export function Analytics() {
         <>
           {/* Weekly activity bar chart */}
           <motion.div
-            ref={chartScope}
             initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
             className="rounded-xl border border-border bg-card/50 p-5 mb-6 space-y-4"
           >
             <h2 className="text-sm font-mono font-medium text-muted-foreground tracking-wider uppercase flex items-center gap-2">
@@ -210,7 +193,7 @@ export function Analytics() {
                     </span>
                     <motion.div
                       initial={{ height: 0 }}
-                      animate={chartInView ? { height: `${height}%` } : { height: 0 }}
+                      animate={{ height: `${height}%` }}
                       transition={{
                         duration: 0.4,
                         delay: i * 0.04,
@@ -233,8 +216,9 @@ export function Analytics() {
 
           {/* Per-habit breakdown */}
           <motion.div
-            ref={habitScope}
             initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
             className="rounded-xl border border-border bg-card/50 p-5 space-y-4"
           >
             <h2 className="text-sm font-mono font-medium text-muted-foreground tracking-wider uppercase">
@@ -246,7 +230,7 @@ export function Analytics() {
                   <motion.div
                     key={h.hid}
                     initial={{ opacity: 0, x: -8 }}
-                    animate={habitInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.25, delay: i * 0.06 }}
                   className="flex items-center gap-4 rounded-lg border border-border/50 bg-card/30 p-3"
                 >
