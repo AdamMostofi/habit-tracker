@@ -12,7 +12,7 @@ const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.06 },
+    transition: { staggerChildren: 0.04 },
   },
 }
 
@@ -156,7 +156,8 @@ export function HabitsList() {
                     <motion.div
                       key={habit.hid}
                       variants={itemVariants}
-                      className="flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:bg-card/80"
+                      whileHover={{ scale: 1.015 }}
+                      className="flex items-center gap-4 rounded-xl border border-border bg-card/50 p-4 transition-colors hover:border-primary/20 hover:bg-card/80"
                     >
                       <div className="min-w-0 flex-1 space-y-1.5">
                         <div className="flex items-center gap-2">

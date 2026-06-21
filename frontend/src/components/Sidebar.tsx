@@ -62,10 +62,10 @@ function MobileNavContent() {
               end={item.to === "/"}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-mono transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 text-sm font-mono transition-all duration-150 border-l-2",
                   isActive
-                    ? "bg-sidebar-accent/20 text-primary"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/10 hover:text-sidebar-foreground",
+                    ? "border-primary text-primary"
+                    : "border-transparent text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-primary/30",
                 )
               }
             >
@@ -102,10 +102,10 @@ function DesktopNavContent() {
             end={item.to === "/"}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-mono transition-colors",
+                "flex items-center gap-3 px-3 py-2.5 text-sm font-mono transition-all duration-150 border-l-2",
                 isActive
-                  ? "bg-sidebar-accent/20 text-primary"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/10 hover:text-sidebar-foreground",
+                  ? "border-primary text-primary"
+                  : "border-transparent text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-primary/30",
               )
             }
           >

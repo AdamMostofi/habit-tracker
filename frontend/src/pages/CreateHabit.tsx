@@ -123,10 +123,12 @@ export function CreateHabit() {
           </Select>
         </div>
 
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading && <Loader2 className="size-4 animate-spin" />}
-          {loading ? "Creating..." : "Create Habit"}
-        </Button>
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading && <Loader2 className="size-4 animate-spin" />}
+            {loading ? "Creating..." : "Create Habit"}
+          </Button>
+        </motion.div>
       </form>
     </motion.div>
   )

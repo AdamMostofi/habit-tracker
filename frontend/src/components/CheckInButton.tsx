@@ -80,10 +80,18 @@ export function CheckInButton({
       disabled={loading}
       animate={
         animation === "shake"
-          ? { x: shakeX }
+          ? { x: shakeX, boxShadow: "0 0 0px transparent" }
           : animation === "pulse"
-            ? { scale: pulseScale }
-            : { scale: 1 }
+            ? {
+                scale: pulseScale,
+                boxShadow: [
+                  "0 0 0px var(--glow)",
+                  "0 0 14px var(--glow)",
+                  "0 0 6px var(--glow)",
+                  "0 0 0px var(--glow)",
+                ],
+              }
+            : { scale: 1, boxShadow: "0 0 0px transparent" }
       }
       transition={{
         type: "spring",

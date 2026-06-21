@@ -45,6 +45,9 @@ export function StreakBadge({ count }: StreakBadgeProps) {
   return (
     <motion.span
       layout
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.2 }}
       className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-mono text-xs tabular-nums ${
         count >= 3
           ? "bg-primary/10 text-primary"
