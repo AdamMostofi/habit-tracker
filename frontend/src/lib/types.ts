@@ -5,6 +5,7 @@ export interface Habit {
   name: string
   description: string | null
   frequency: "daily" | "weekly" | "monthly"
+  current_streak: number
 }
 
 export interface HabitCreate {
@@ -35,4 +36,28 @@ export interface User {
 
 export interface UserCreate {
   username: string
+}
+
+export interface HabitStatsItem {
+  hid: number
+  name: string
+  frequency: string
+  current_streak: number
+  best_streak: number
+  total_checkins: number
+  completion_rate_7: number
+  completion_rate_30: number
+}
+
+export interface WeekSummary {
+  label: string
+  done: number
+}
+
+export interface DashboardStats {
+  total_habits: number
+  total_checkins: number
+  best_streak: number
+  habits: HabitStatsItem[]
+  weekly_summary: WeekSummary[]
 }

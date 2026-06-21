@@ -27,12 +27,15 @@ import type {
   HabitLogCreate,
   User,
   UserCreate,
+  DashboardStats,
 } from "./types"
 
 /* ── Habits ── */
 
 export const habits = {
   list: () => request<Habit[]>("GET", "/habits/"),
+  get: (id: number) => request<Habit>("GET", `/habits/${id}`),
+  getLogs: (id: number) => request<HabitLog[]>("GET", `/habits/${id}/logs`),
   create: (data: HabitCreate) => request<Habit>("POST", "/habits/", data),
   update: (id: number, data: HabitCreate) =>
     request<Habit>("PUT", `/habits/${id}`, data),
@@ -43,6 +46,7 @@ export const habits = {
   monthly: () => request<Habit[]>("GET", "/habits/monthly"),
   checkIn: (id: number, data: HabitLogCreate) =>
     request<HabitLog>("POST", `/habits/${id}/log`, data),
+  stats: () => request<DashboardStats>("GET", "/habits/stats"),
 }
 
 /* ── Users ── */
