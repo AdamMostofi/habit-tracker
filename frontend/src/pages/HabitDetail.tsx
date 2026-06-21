@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { motion } from "motion/react"
-import { ArrowLeft, Loader2, CheckCircle2, MinusCircle } from "lucide-react"
+import { ArrowLeft, CheckCircle2, MinusCircle } from "lucide-react"
 import { toast } from "sonner"
 
 import { habits } from "@/lib/api"
 import type { Habit, HabitLog } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { DeleteHabitButton } from "@/components/DeleteHabitButton"
 import { StreakBadge } from "@/components/StreakBadge"
 
@@ -120,9 +121,63 @@ export function HabitDetail() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="size-5 animate-spin text-muted-foreground" />
-      </div>
+      <section className="max-w-2xl mx-auto space-y-6">
+        {/* Back link skeleton */}
+        <div className="inline-flex items-center gap-1 h-5 w-12 rounded bg-muted/30 animate-pulse" />
+
+        {/* Card skeleton */}
+        <div className="rounded-xl border border-border bg-card/50 p-5 space-y-4">
+          <div className="space-y-3">
+            <Skeleton className="h-7 w-48 rounded-md" />
+            <div className="flex gap-2">
+              <Skeleton className="h-5 w-16 rounded-md" />
+              <Skeleton className="h-5 w-24 rounded-md" />
+            </div>
+          </div>
+          <Skeleton className="h-4 w-full rounded-md" />
+          <div className="flex gap-2 pt-1">
+            <Skeleton className="h-8 w-16 rounded-lg" />
+            <Skeleton className="h-8 w-20 rounded-lg" />
+          </div>
+        </div>
+
+        {/* Calendar skeleton */}
+        <div className="rounded-xl border border-border bg-card/50 p-4 space-y-3">
+          <div className="flex gap-2">
+            <Skeleton className="h-3 w-12 rounded" />
+            <Skeleton className="h-3 w-12 rounded" />
+          </div>
+          <div className="flex gap-[2px]">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <Skeleton key={i} className="h-[10px] w-[26px] rounded" />
+            ))}
+          </div>
+          <div className="space-y-[2px]">
+            {Array.from({ length: 6 }).map((_, wi) => (
+              <div key={wi} className="flex gap-[2px]">
+                {Array.from({ length: 7 }).map((_, ci) => (
+                  <Skeleton key={ci} className="h-[26px] w-[26px] rounded-[5px]" />
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-3 pt-1">
+            <Skeleton className="h-3 w-12 rounded" />
+            <Skeleton className="h-3 w-10 rounded" />
+            <Skeleton className="h-3 w-14 rounded" />
+          </div>
+        </div>
+
+        {/* Activity skeleton */}
+        <div className="rounded-xl border border-border bg-card/50 p-5 space-y-3">
+          <Skeleton className="h-4 w-32 rounded-md" />
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-9 w-full rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </section>
     )
   }
 
@@ -159,11 +214,11 @@ export function HabitDetail() {
     >
       {/* Back */}
       <Link
-        to="/habits"
+        to="/"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="size-4" />
-        All Habits
+        Habits
       </Link>
 
       {/* Habit card */}
@@ -197,7 +252,7 @@ export function HabitDetail() {
             habitName={habit.name}
             onDeleted={() => {
               toast.success("Habit deleted")
-              navigate("/habits", { replace: true })
+              navigate("/", { replace: true })
             }}
           />
         </div>
