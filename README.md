@@ -1,5 +1,14 @@
 # Habit Tracker
 
+![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=fff&style=flat)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=fff&style=flat)
+![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=fff&style=flat)
+![TypeScript 6](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=fff&style=flat)
+![Tailwind v4](https://img.shields.io/badge/Tailwind_v4-06B6D4?logo=tailwindcss&logoColor=fff&style=flat)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=fff&style=flat)
+![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff&style=flat)
+![motion](https://img.shields.io/badge/motion-fff?logo=framer&logoColor=0055FF&style=flat)
+
 Full-stack habit tracker. Track daily, weekly, and monthly habits. Check in, build streaks, see your stats.
 
 Dark cinematic UI with green accent, terminal-precision typography, and purposeful motion. Practice-what-you-build architecture: TypeScript, linted, committed per vertical slice.
