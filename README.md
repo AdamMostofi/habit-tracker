@@ -1,103 +1,51 @@
 # Habit Tracker
 
-A full-stack habit tracking app built for learning — Python, FastAPI, SQL, and React.
+Full-stack habit tracker. Track daily, weekly, and monthly habits. Check in, build streaks, see your stats.
 
-> **Purpose:** This project exists solely for me to learn backend development,
-> database design, API architecture, and frontend integration.
-> Every feature is a vertical slice designed → pseudocoded → implemented → committed.
+Dark cinematic UI with green accent, terminal-precision typography, and purposeful motion. Practice-what-you-build architecture: TypeScript, linted, committed per vertical slice.
 
 ## Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | Python + FastAPI |
-| Database | SQLite (SQLAlchemy ORM) |
-| Frontend | React (coming in Slice 2) |
-| CI/CD | GitHub Actions (coming) |
+| Backend | Python 3.12 + FastAPI 0.115 |
+| Database | SQLite (SQLAlchemy 2.0 ORM) |
+| API Schemas | Pydantic 2.9 |
+| Frontend | React 19 + Vite 8 + TypeScript 6 |
+| Styling | Tailwind CSS v4 + shadcn/ui |
+| Animation | motion 12 (motion.dev) |
+| Icons | lucide-react |
+| Fonts | Geist Variable + JetBrains Mono |
 
-## Setup
+## Quick Start
 
-### Prerequisites
-
-- Python 3.12+
-- Node.js (for frontend later)
-
-### 1. Backend
+### Backend
 
 ```bash
 cd backend
 
-# Create virtual environment (optional but recommended)
 python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# .venv\Scripts\activate   # Windows
+source .venv/bin/activate   # Linux/Mac
+# .venv\Scripts\activate    # Windows
 
-# Install dependencies
 pip install -r requirements.txt
 
-# Start the server
 uvicorn app.main:app --reload
 ```
 
-### 2. Verify it works
+API docs: http://localhost:8000/docs (Swagger) or http://localhost:8000/redoc (ReDoc).
+
+### Frontend
 
 ```bash
-# Create a user
-curl -X POST http://localhost:8000/users/ \
-  -H "Content-Type: application/json" \
-  -d '{"username": "adam"}'
+cd frontend
 
-# Create a habit
-curl -X POST http://localhost:8000/habits/ \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Exercise", "description": "30 min run", "frequency": "daily"}'
+npm install
 
-# See today's habits
-curl http://localhost:8000/habits/today
-
-# Check in
-curl -X POST http://localhost:8000/habits/1/log \
-  -H "Content-Type: application/json" \
-  -d '{"hid": 1, "user_id": 1, "date": "2026-06-20", "status": "done"}'
+npm run dev
 ```
 
-### 3. API Docs
-
-Once the server is running, visit:
-- **Swagger UI:** http://localhost:8000/docs
-- **ReDoc:** http://localhost:8000/redoc
-
-## API Endpoints
-
-### Habits
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/habits/` | List all habits |
-| POST | `/habits/` | Create a habit |
-| PUT | `/habits/{id}` | Update a habit |
-| DELETE | `/habits/{id}` | Delete a habit |
-| GET | `/habits/today` | Daily habits |
-| GET | `/habits/weekly` | Weekly habits |
-| GET | `/habits/monthly` | Monthly habits |
-| POST | `/habits/{id}/log` | Check in (done/skip) |
-
-### Users
-
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/users/` | Create a user |
-| GET | `/users/` | List all users |
-| DELETE | `/users/{id}` | Delete a user |
-
-## Database Schema
-
-```
-users:         user_id (PK), username
-habits:        hid (PK), name, description, frequency (daily/weekly/monthly)
-habit_logs:    log_id (PK), hid (FK), user_id (FK), date, status (done/skip)
-user_habits:   user_id (FK), hid (FK) — many-to-many join
-```
+Opens at http://localhost:5173.
 
 ## Project Structure
 
@@ -105,31 +53,85 @@ user_habits:   user_id (FK), hid (FK) — many-to-many join
 habit-tracker/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py           # FastAPI app entry point
-│   │   ├── database.py       # SQLite connection
-│   │   ├── models.py         # SQLAlchemy table definitions
-│   │   ├── schemas.py        # Pydantic request/response models
+│   │   ├── main.py           # FastAPI entry point, CORS, middleware
+│   │   ├── database.py       # SQLite + SQLAlchemy setup
+│   │   ├── models.py         # Table models
+│   │   ├── schemas.py        # Pydantic request/response schemas
 │   │   └── routers/
-│   │       ├── habits.py     # Habit CRUD + check-in + time views
+│   │       ├── habits.py     # Habit CRUD, check-in, time views, stats
 │   │       └── users.py      # User CRUD
 │   └── requirements.txt
-├── frontend/                  # React (next slice)
-└── ph1-design.excalidraw      # System design sketch
+├── frontend/
+│   ├── src/
+│   │   ├── pages/            # TodayView, HabitsList, HabitDetail,
+│   │   │                     # CreateHabit, EditHabit, Analytics
+│   │   ├── components/       # Sidebar, CheckInButton, DeleteHabitButton,
+│   │   │                     # StreakBadge, ui/ (shadcn primitives)
+│   │   ├── lib/              # api.ts, types.ts, utils.ts
+│   │   ├── App.tsx           # Router + layout + page transitions
+│   │   ├── main.tsx          # Entry point
+│   │   └── index.css         # Tailwind + OKLCH theme variables
+│   ├── index.html
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.js
+├── docs/
+│   ├── adr/                  # Architecture Decision Records
+│   ├── backlog.md            # Security audit, polish items
+│   ├── ideas.md              # Future UI ideas
+│   └── motion-feature-audit.md
+├── CONTEXT.md                # Domain glossary
+├── PRODUCT.md                # Product vision, brand, design principles
+└── ph1-design.excalidraw     # System design sketch
 ```
 
-## Learning Notes
-
-- Streaks are **calculated** from HabitLog, not stored
-- Frequency field determines which time view a habit appears in
-- All patterns follow the 5 basic CRUD templates
-- Per-feature commits for GitHub contribution graph
-
-## Git Log
+## Database Schema
 
 ```
-35bf6de chore: add pycache and db to gitignore
-410467d feat: implement Slice 1 - habits CRUD + check-in + time views + users
-09a8e2c feat: add frequency field to habit model
-1de452b feat: add FastAPI project skeleton
-ad96d03 feat: add preliminary excalidraw design
+users:         user_id (PK), username
+habits:        hid (PK), name, description, frequency (daily/weekly/monthly)
+habit_logs:    log_id (PK), hid (FK), user_id (FK), date, status (done/skip)
+user_habits:   user_id (FK), hid (FK)   many-to-many join
 ```
+
+Streaks are calculated from the habit_logs table, not stored.
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/habits/` | List all habits (with streaks) |
+| POST | `/habits/` | Create a habit |
+| GET | `/habits/today` | Daily habits for today |
+| GET | `/habits/weekly` | Weekly habits this week |
+| GET | `/habits/monthly` | Monthly habits this month |
+| GET | `/habits/stats` | Dashboard stats (streaks, rates, weekly summary) |
+| GET | `/habits/{id}` | Get habit detail |
+| PUT | `/habits/{id}` | Update a habit |
+| DELETE | `/habits/{id}` | Delete a habit |
+| POST | `/habits/{id}/log` | Check in (done / skip) |
+| GET | `/habits/{id}/logs` | Check-in history for a habit |
+| POST | `/users/` | Create a user |
+| GET | `/users/` | List all users |
+| DELETE | `/users/{id}` | Delete a user |
+
+## Design System
+
+Sharp, cinematic, dev-tool inspired. Dark theme with green accent, respects
+`prefers-color-scheme`. Layout uses monospace for data, clean sans for UI.
+Motion is purposeful (page transitions, check-in feedback), not decorative.
+WCAG AA contrast. Respects `prefers-reduced-motion`.
+
+## Development
+
+Built in vertical slices. Each feature goes through design (Excalidraw),
+pseudocode, implementation, then commit. The project is a deliberate exercise
+in full-stack architecture — backend-first, then the frontend on top of a
+stable API.
+
+## Docs
+
+- **CONTEXT.md** — Domain glossary (Habit, Check-in, Streak, Frequency, Slice)
+- **PRODUCT.md** — Product vision, brand, design principles
+- **docs/adr/** — Architecture Decision Records
+- **docs/backlog.md** — Security audit findings, polish backlog
