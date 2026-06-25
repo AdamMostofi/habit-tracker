@@ -50,7 +50,6 @@ export function CheckInButton({
     try {
       const payload: HabitLogCreate = {
         hid: habitId,
-        user_id: 1,
         date: new Date().toISOString().split("T")[0],
         status: nextStatus,
       };

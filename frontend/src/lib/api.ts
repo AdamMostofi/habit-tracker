@@ -25,8 +25,6 @@ import type {
   HabitCreate,
   HabitLog,
   HabitLogCreate,
-  User,
-  UserCreate,
   DashboardStats,
 } from "./types"
 
@@ -47,12 +45,4 @@ export const habits = {
   checkIn: (id: number, data: HabitLogCreate) =>
     request<HabitLog>("POST", `/habits/${id}/log`, data),
   stats: () => request<DashboardStats>("GET", "/habits/stats"),
-}
-
-/* ── Users ── */
-
-export const users = {
-  create: (data: UserCreate) => request<User>("POST", "/users/", data),
-  list: () => request<User[]>("GET", "/users/"),
-  delete: (id: number) => request<void>("DELETE", `/users/${id}`),
 }
