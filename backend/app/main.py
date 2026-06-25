@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routers import habits, users
+from app.routers import habits
 
 # Create tables on startup
 Base.metadata.create_all(bind=engine)
@@ -21,7 +21,6 @@ app.add_middleware(
 )
 
 app.include_router(habits.router, prefix="/habits", tags=["habits"])
-app.include_router(users.router, prefix="/users", tags=["users"])
 
 
 @app.get("/")

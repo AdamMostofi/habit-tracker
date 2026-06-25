@@ -263,7 +263,6 @@ def check_in(habit_id: int, log: HabitLogCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Habit not found")
     log_entry = HabitLog(
         hid=habit_id,
-        user_id=log.user_id,
         date=log.date,
         status=log.status,
     )
