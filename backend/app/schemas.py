@@ -1,7 +1,8 @@
 """Pydantic schemas for request/response validation."""
 
 from datetime import date
-from pydantic import BaseModel
+from typing import Literal
+from pydantic import BaseModel, Field
 
 
 class UserCreate(BaseModel):
@@ -17,9 +18,9 @@ class UserResponse(BaseModel):
 
 
 class HabitCreate(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
     description: str | None = None
-    frequency: str = "daily"  # "daily", "weekly", or "monthly"
+    frequency: Literal["daily", "weekly", "monthly"] = "daily"
 
 
 class HabitResponse(BaseModel):
@@ -38,7 +39,7 @@ class HabitLogCreate(BaseModel):
     hid: int
     user_id: int
     date: date
-    status: str  # "done" or "skip"
+    status: Literal["done", "skip"]
 
 
 class HabitLogResponse(BaseModel):
