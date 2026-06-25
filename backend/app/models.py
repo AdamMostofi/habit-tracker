@@ -21,7 +21,7 @@ class HabitLog(Base):
     __tablename__ = "habit_logs"
 
     log_id = Column(Integer, primary_key=True, index=True)
-    hid = Column(Integer, ForeignKey("habits.hid"), nullable=False)
+    hid = Column(Integer, ForeignKey("habits.hid", ondelete="CASCADE"), nullable=False)
     date = Column(Date, nullable=False)
     status = Column(String(10), nullable=False)  # "done" or "skip"
     # streak is calculated — not stored here
